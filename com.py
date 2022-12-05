@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding=utf-8
 """
 This is a module for bot commands so that bot.py can import them.
@@ -12,44 +12,44 @@ Exception handling
 import random
 import re
 
-donger = ['ヽ〳 ՞ ᗜ ՞ 〵ง'.decode('utf-8'),
-  's( ^ ‿ ^)-b'.decode('utf-8'),
-  '(つ°ヮ°)つ  └⋃┘'.decode('utf-8'),
-  '┬─┬ノ( ◕◡◕ ノ)'.decode('utf-8'),
-  '╰( ◕ ᗜ ◕ )╯'.decode('utf-8'),
-  'ଘ(੭*ˊᵕˋ)੭'.decode('utf-8'),
-  'd–(^ ‿ ^ )z'.decode('utf-8'),
-  '(つ°ヮ°)つ'.decode('utf-8'),
-  '(> ^_^ )>'.decode('utf-8'),
-  '☜(ﾟヮﾟ☜)'.decode('utf-8'),
-  '┗(＾0＾)┓'.decode('utf-8'),
-  '໒( ͡ᵔ ͜ʖ ͡ᵔ )७'.decode('utf-8'),
-  '(ノ°▽°)ノ︵┻━┻'.decode('utf-8'),
-  'ᕕ╏ ͡ ▾ ͡ ╏┐'.decode('utf-8'),
-  '¯\_( ͠° ͟ʖ °͠ )_/¯'.decode('utf-8'),
-  '(ᓄಠ_ಠ)ᓄ'.decode('utf-8'),
-  'ʕง•ᴥ•ʔง'.decode('utf-8'),
-  '(ง’̀-‘́)ง'.decode('utf-8'),
-  '(งಠ_ಠ)ง'.decode('utf-8'),
-  '༼⁰o⁰；༽'.decode('utf-8'),
-  'ԅ⁞ ◑ ₒ ◑ ⁞ᓄ'.decode('utf-8'),
-  '། – _ – །'.decode('utf-8'),
-  '༼つಠ益ಠ༽つ ─=≡ΣO))'.decode('utf-8'),
-  'ヽ(⌐■_■)ノ♪♬'.decode('utf-8'),
-  '♪ヽ( ⌒o⌒)人(⌒-⌒ )v ♪'.decode('utf-8'),
-  '♪O<( ･ ∀ ･ )っ┌iii┐'.decode('utf-8'),
-  '[ ⇀ ‿ ↼ ]'.decode('utf-8'),
-  'ヽ(”`▽´)ﾉ'.decode('utf-8')]
+donger = ['ヽ〳 ՞ ᗜ ՞ 〵ง',
+  's( ^ ‿ ^)-b',
+  '(つ°ヮ°)つ  └⋃┘',
+  '┬─┬ノ( ◕◡◕ ノ)',
+  '╰( ◕ ᗜ ◕ )╯',
+  'ଘ(੭*ˊᵕˋ)੭',
+  'd–(^ ‿ ^ )z',
+  '(つ°ヮ°)つ',
+  '(> ^_^ )>',
+  '☜(ﾟヮﾟ☜)',
+  '┗(＾0＾)┓',
+  '໒( ͡ᵔ ͜ʖ ͡ᵔ )७',
+  '(ノ°▽°)ノ︵┻━┻',
+  'ᕕ╏ ͡ ▾ ͡ ╏┐',
+  '¯\_( ͠° ͟ʖ °͠ )_/¯',
+  '(ᓄಠ_ಠ)ᓄ',
+  'ʕง•ᴥ•ʔง',
+  '(ง’̀-‘́)ง',
+  '(งಠ_ಠ)ง',
+  '༼⁰o⁰；༽',
+  'ԅ⁞ ◑ ₒ ◑ ⁞ᓄ',
+  '། – _ – །',
+  '༼つಠ益ಠ༽つ ─=≡ΣO))',
+  'ヽ(⌐■_■)ノ♪♬',
+  '♪ヽ( ⌒o⌒)人(⌒-⌒ )v ♪',
+  '♪O<( ･ ∀ ･ )っ┌iii┐',
+  '[ ⇀ ‿ ↼ ]',
+  'ヽ(”`▽´)ﾉ']
 
 def AddrFuncs(cmd, args, data, conn):
   chan = data['channel']
   if cmd.lower() == 'whohere':
     chan = args[0]
     msg = "Users in %s: %s %s" % (chan, ' '.join(conn.nicks[chan]), str(len(conn.nicks[chan])))
-    print msg
+    print(msg)
   elif cmd.lower() == 'lastmessages':
     for row in conn.lastMsg:
-      print "%s: %s" % (row, conn.lastMsg[row])
+      print("%s: %s" % (row, conn.lastMsg[row]))
   elif cmd.lower() == 'channels' and data['sender'] == conn.trusted:
     msg = "I'm in these channels: %s" % ' '.join(conn.channels)
     chan2 = conn.trusted.split('!')[0]
@@ -92,7 +92,7 @@ def AddrFuncs(cmd, args, data, conn):
     if asker == conn.trusted:
       conn.quit('goodbye for now')
     else:
-      conn.say('┌∩┐(ಠ_ಠ)┌∩┐'.decode('utf-8'), chan)
+      conn.say('┌∩┐(ಠ_ಠ)┌∩┐', chan)
   elif cmd.lower() == 'die':
     conn.say('nou', chan)
   else:
@@ -114,13 +114,13 @@ def UnAddrFuncs(cmd, args, data, conn):
     conn.say("Help will be coming soon (but I don't promise)", chan)
   elif cmd.lower() == 'happy':
     if args[0].lower() == 'birthday' or args[0].lower() == 'bday':
-      conn.say('♪O<( ･ ∀ ･ )っ┌iii┐'.decode('utf-8'), chan)
+      conn.say('♪O<( ･ ∀ ･ )っ┌iii┐', chan)
   elif cmd.lower() == 'donger' or cmd.lower() == 'dong' or cmd.lower() == 'smoak':
     conn.say(random.choice(donger), chan)
   elif cmd.lower() == '!flip' or cmd.lower() == '.flip':
-    conn.say('(ノ°▽°)ノ︵┻━┻'.decode('utf-8'), chan)
+    conn.say('(ノ°▽°)ノ︵┻━┻', chan)
   elif cmd.lower() == '!unflip' or cmd.lower() == '.unflip':
-    conn.say('┬─┬ノ(°▽°ノ)'.decode('utf-8'), chan)
+    conn.say('┬─┬ノ(°▽°ノ)', chan)
   elif cmd.lower() == '^5':
     fiver = data['sender'].split('!')[0]
     chan = data['channel']
@@ -140,4 +140,4 @@ def OnKickedFuncs(msg, data, conn):
 
 def OtherKickedFuncs(msg, data, conn):
   chan = data['channel']
-  conn.say('╭∩╮ʕ•ᴥ•ʔ╭∩╮'.decode('utf-8'), chan)
+  conn.say('╭∩╮ʕ•ᴥ•ʔ╭∩╮', chan)

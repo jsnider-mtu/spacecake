@@ -1,1 +1,4 @@
 ident.py
+*.swp
+*.bak
+__pycache__/*

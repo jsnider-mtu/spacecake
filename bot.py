@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding=utf-8
 import com
 import socket
@@ -7,7 +7,7 @@ import threading
 import time
 import logging
 from logging.handlers import RotatingFileHandler
-from imp import reload
+from importlib import reload
 from ident import danknode
 
 # Setup log file
@@ -15,7 +15,7 @@ formatter = logging.Formatter('%(asctime)s %(name)s - %(levelname)s: \
                                %(message)s')
 logger = logging.getLogger('chroot')
 logger.setLevel(logging.DEBUG)
-handler = RotatingFileHandler(filename='/var/log/spacecake/bot.log',
+handler = RotatingFileHandler(filename='/home/josh/.local/var/log/spacecake/bot.log',
                               maxBytes=1073741824, backupCount=15)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
@@ -216,7 +216,7 @@ class IRCConn(object):
     """
     Send something (anything) to the IRC server.
     """
-    print "Sending: %s\r\n" % msg
+    print("Sending: %s\r\n" % msg)
     logger.info("Sending: %s\r\n" % msg)
     self.sock.send(("%s\r\n" % msg).encode('utf-8'))
 
@@ -241,7 +241,7 @@ class IRCConn(object):
           except(UnicodeEncodeError, UnicodeDecodeError):
             self.handle_encoding_error()
             return ''
-          print "received: %s" % line
+          print("received: %s" % line)
           logger.info("received: %s" % line)
           return line
       buf.append(ch)
@@ -252,7 +252,7 @@ class IRCConn(object):
     else:
       try:
         parsable = line.strip(b'\r\n').decode('utf-8')
-        print "Received: %s" % parsable
+        print("Received: %s" % parsable)
         logger.info("Received: %s" % parsable)
         return parsable
       except(UnicodeEncodeError, UnicodeDecodeError):
@@ -306,11 +306,11 @@ class IRCConn(object):
       self.nicks[tokens[0]].remove(prefix.split('!')[0])
 
   def handle_encoding_error(self):
-    print 'Encoding error encountered.'
+    print('Encoding error encountered.')
     logger.warning('Encoding error encountered.')
 
   def handle_error(self, tokens):
-    print "Error. tokens: %s" % tokens
+    print("Error. tokens: %s" % tokens)
     logger.critical("Error. tokens: %s" % tokens)
     if tokens[0] == ':Closing' and tokens[1] == 'Link:':
       if tokens[3] == '(Ping' and tokens[4] == 'timeout:':
@@ -343,7 +343,7 @@ class Bot(object):
     tokens[0] = tokens[0].strip(':')
     nick, host = sender.split('!')
     if chan == self.conn.nick:
-      print "\nPM: %s\n" % ' '.join(tokens)
+      print("\nPM: %s\n" % ' '.join(tokens))
       pm.critical("From %s: %s" % (nick, ' '.join(tokens)))
       chan = nick
       msg = "%s told spacecake: %s" % (nick, ' '.join(tokens))

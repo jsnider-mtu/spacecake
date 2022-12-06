@@ -15,7 +15,7 @@ formatter = logging.Formatter('%(asctime)s %(name)s - %(levelname)s: \
                                %(message)s')
 logger = logging.getLogger('chroot')
 logger.setLevel(logging.DEBUG)
-handler = RotatingFileHandler(filename='/home/josh/.local/var/log/spacecake/bot.log',
+handler = RotatingFileHandler(filename='/var/log/spacecake/bot.log',
                               maxBytes=1073741824, backupCount=15)
 handler.setFormatter(formatter)
 logger.addHandler(handler)

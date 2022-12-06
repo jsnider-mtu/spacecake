@@ -127,7 +127,7 @@ class IRCConn(object):
     """
     self.say("GROUP %s %s" % (grpnick, pswd), "NickServ")
 
-  def ident(self, pswd):
+  def identify(self, pswd):
     """
     Do a NickServ identify with @pswd.
     """
@@ -336,7 +336,7 @@ class IRCConn(object):
     """
     if 'GRP_PASS' in os.environ:
       self.group(self.trusted.split('!')[0], os.getenv('GRP_PASS'))
-      self.ident(os.getenv('GRP_PASS'))
+      self.identify(os.getenv('GRP_PASS'))
     for chan in self.join_first:
       self.join(chan)
 

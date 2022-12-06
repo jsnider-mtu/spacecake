@@ -2,6 +2,7 @@
 # coding=utf-8
 import com
 import socket
+import os
 import sys
 import threading
 import time
@@ -300,7 +301,10 @@ class IRCConn(object):
     elif cmd == 'JOIN':
       if prefix.split('!')[0] != self.nick:
         self.handler.handle_other_join(tokens, prefix)
-        self.nicks[tokens[0]].append(prefix.split('!')[0])
+        if tokens[0] in self.nicks:
+          self.nicks[tokens[0]].append(prefix.split('!')[0])
+        else:
+          self.nicks[tokens[0]] = [prefix.split('!')[0]]
     elif cmd == 'PRIVMSG':
       self.handler.handle_privmsg(tokens, prefix)
     elif cmd == 'QUIT':
@@ -330,6 +334,8 @@ class IRCConn(object):
     Called once we have connected to and identified with the server.
     Mainly joins the channels that we want to join at the start.
     """
+    if 'GRP_PASS' in os.environ:
+      self.group(self.trusted.split('!')[0], os.getenv('GRP_PASS'))
     for chan in self.join_first:
       self.join(chan)
 

@@ -11,6 +11,7 @@ Exception handling
 """
 import random
 import re
+import time
 
 donger = ['ヽ〳 ՞ ᗜ ՞ 〵ง',
   's( ^ ‿ ^)-b',

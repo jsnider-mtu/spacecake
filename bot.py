@@ -301,10 +301,10 @@ class IRCConn(object):
     elif cmd == 'JOIN':
       if prefix.split('!')[0] != self.nick:
         self.handler.handle_other_join(tokens, prefix)
-        if tokens[0] in self.nicks:
-          self.nicks[tokens[0]].append(prefix.split('!')[0])
+        if tokens[0][1:] in self.nicks:
+          self.nicks[tokens[0][1:]].append(prefix.split('!')[0])
         else:
-          self.nicks[tokens[0]] = [prefix.split('!')[0]]
+          self.nicks[tokens[0][1:]] = [prefix.split('!')[0]]
     elif cmd == 'PRIVMSG':
       self.handler.handle_privmsg(tokens, prefix)
     elif cmd == 'QUIT':
@@ -313,7 +313,7 @@ class IRCConn(object):
         if quitter in self.nicks[key]:
           self.nicks[key].remove(quitter)
     elif cmd == 'PART':
-      self.nicks[tokens[0]].remove(prefix.split('!')[0])
+      self.nicks[tokens[0][1:]].remove(prefix.split('!')[0])
 
   def handle_encoding_error(self):
     print('Encoding error encountered.')

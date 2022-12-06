@@ -126,6 +126,15 @@ def UnAddrFuncs(cmd, args, data, conn):
     chan = data['channel']
     msg = "high fives %s in the face" % fiver
     conn.describe(msg, chan)
+  elif cmd.lower() == 'o/':
+    msg = "waves emphatically to %s" % sendNick
+    msg2 = "Were you.. were you not waving at me?"
+    msg3 = "sobs quietly in the corner"
+    conn.describe(msg, chan)
+    time.sleep(3)
+    conn.say(msg2, chan)
+    time.sleep(1.5)
+    conn.describe(msg3, chan)
 
 def OnJoinFuncs(channel, conn):
   pass

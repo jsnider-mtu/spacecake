@@ -336,6 +336,7 @@ class IRCConn(object):
     """
     if 'GRP_PASS' in os.environ:
       self.group(self.trusted.split('!')[0], os.getenv('GRP_PASS'))
+      self.ident(os.getenv('GRP_PASS'))
     for chan in self.join_first:
       self.join(chan)
 

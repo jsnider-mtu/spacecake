@@ -339,7 +339,7 @@ class IRCConn(object):
       self.identify(os.getenv('GRP_PASS'))
     for chan in self.join_first:
       self.join(chan)
-    self.say('login spacecake ' + os.getenv('GRP_PASS'), 'idlerpg')
+    self.say('login SpaceyCakes ' + os.getenv('GRP_PASS'), 'idlerpg')
 
 class Bot(object):
   """

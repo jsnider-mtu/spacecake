@@ -120,6 +120,12 @@ class IRCConn(object):
     """
     self._send("NAMES %s" % chan)
 
+  def group(self, grpnick, pswd):
+    """
+    Send a GROUP command to NickServ with @pswd
+    """
+    self.say("GROUP %s %s" % (grpnick, pswd), "NickServ")
+
   def ident(self, pswd):
     """
     Do a NickServ identify with @pswd.

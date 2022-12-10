@@ -388,6 +388,7 @@ class Bot(object):
       args = tokens[1:]
     except IndexError:
       args = []
+    print(chan)
     if chan == self.conn.nick:
       com.PMFuncs(cmd, args, data, self.conn)
     if is_to_me and cmd == 'reload':

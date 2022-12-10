@@ -145,7 +145,7 @@ def UnAddrFuncs(cmd, args, data, conn):
       prompt=' '.join(args[0:]),
       temperature=0.5,
       max_tokens=60,
-      top_p=0.3
+      top_p=0.3,
       frequency_penalty=0.5,
       presence_penalty=0.0
     )

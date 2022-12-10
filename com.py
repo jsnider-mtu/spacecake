@@ -162,23 +162,26 @@ def UnAddrFuncs(cmd, args, data, conn):
         conn.say('You need to register an api key to use this command\n\
                   To register: /msg spacecake openai_register api_key', chan)
     if openai.api_key != '':
-      try:
-        response = openai.Completion.create(
-          model='text-davinci-003',
-          prompt=' '.join(args[0:]),
-          temperature=0.5,
-          max_tokens=200,
-          top_p=0.3,
-          frequency_penalty=0.5,
-          presence_penalty=0.0
-        )
-        for res in response['choices'][0]['text'].split('\n'):
-          if res != '':
-            conn.say(sendNick + ': ' + res, chan)
-      except openai.error.AuthenticationError:
-        conn.say(sendNick + ': Your api key is invalid', chan)
-      except:
-        conn.say(sendNick + ': Something unexpected went wrong', chan)
+      if len(args) != 0:
+        try:
+          response = openai.Completion.create(
+            model='text-davinci-003',
+            prompt=' '.join(args[0:]),
+            temperature=0.5,
+            max_tokens=200,
+            top_p=0.3,
+            frequency_penalty=0.5,
+            presence_penalty=0.0
+          )
+          for res in response['choices'][0]['text'].split('\n'):
+            if res != '':
+              conn.say(sendNick + ': ' + res, chan)
+        except openai.error.AuthenticationError:
+          conn.say(sendNick + ': Your api key is invalid', chan)
+        except:
+          conn.say(sendNick + ': Something unexpected went wrong', chan)
+      else:
+        conn.say('Usage: /msg spacecake openai_register api_key', chan)
     else:
       conn.say(sendNick + ': Your api key is an empty string. Try to register again', chan)
 

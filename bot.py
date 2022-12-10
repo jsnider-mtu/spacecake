@@ -391,7 +391,7 @@ class Bot(object):
         self.conn.say('Commands module reloaded',
                        data['sender'].split('!')[0])
       else:
-        self.conn.say('┌∩┐(ಠ_ಠ)┌∩┐'.decode('utf-8'),
+        self.conn.say('┌∩┐(ಠ_ಠ)┌∩┐',
                        data['sender'].split('!')[0])
     elif is_to_me and cmd == 'none':
       self.conn.say("%s" % nick, chan)

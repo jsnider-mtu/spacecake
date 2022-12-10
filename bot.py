@@ -16,8 +16,8 @@ if os.getenv('GRP_PASS') == '':
   sys.exit(1)
 
 # Setup log file
-formatter = logging.Formatter('%(asctime)s %(name)s - %(levelname)s: \
-                               %(message)s')
+formatter = logging.Formatter('%(asctime)s %(name)s - %(levelname)s: '\
+                              '%(message)s')
 logger = logging.getLogger('chroot')
 logger.setLevel(logging.DEBUG)
 handler = RotatingFileHandler(filename='/var/log/spacecake/bot.log',

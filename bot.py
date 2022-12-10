@@ -399,10 +399,7 @@ class Bot(object):
     tokens.pop(0) # get rid of our nick from the beginning of the msg.
     tokens.pop(0) # get rid of the equals sign
     chan = tokens.pop(0)
-    try:
-      self.conn.nicks[chan] += [t.lstrip(':') for t in tokens]
-    except:
-      self.conn.nicks[chan] = [t.lstrip(':') for t in tokens]
+    self.conn.nicks[chan] = [t.lstrip(':') for t in tokens]
 
   def handle_join(self, channel):
     com.OnJoinFuncs(channel, self.conn)

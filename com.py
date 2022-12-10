@@ -181,7 +181,7 @@ def UnAddrFuncs(cmd, args, data, conn):
         except:
           conn.say(sendNick + ': Something unexpected went wrong', chan)
       else:
-        conn.say('Usage: /msg spacecake openai_register api_key', chan)
+        conn.say('To register: /msg spacecake openai_register api_key\nUsage: .openai message', chan)
     else:
       conn.say(sendNick + ': Your api key is an empty string. Try to register again', chan)
 

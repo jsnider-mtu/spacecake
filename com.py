@@ -44,6 +44,20 @@ donger = ['ヽ〳 ՞ ᗜ ՞ 〵ง',
   '[ ⇀ ‿ ↼ ]',
   'ヽ(”`▽´)ﾉ']
 
+def PMFuncs(cmd, args, data, conn):
+  chan = data['nick']
+  if cmd.lower() == 'openai_register':
+    if len(args) != 0:
+      if args[0] != '':
+        conn.openai[chan] = args[0]
+        conn.say('Your openai api key has been stored.\n\
+                  Use command .openai or !openai to talk \
+                  to the AI chat bot.', chan)
+      else:
+        conn.say('Usage: /msg spacecake openai_register api_key', chan)
+    else:
+      conn.say('Usage: /msg spacecake openai_register api_key', chan)
+
 def AddrFuncs(cmd, args, data, conn):
   chan = data['channel']
   if cmd.lower() == 'whohere':
@@ -139,22 +153,34 @@ def UnAddrFuncs(cmd, args, data, conn):
     time.sleep(1.5)
     conn.describe(msg3, chan)
   elif cmd.lower() == '.openai' or cmd.lower() == '!openai':
-    openai.api_key = os.getenv('OPENAI_API_KEY')
-    if openai.api_key != '':
-      response = openai.Completion.create(
-        model='text-davinci-003',
-        prompt=' '.join(args[0:]),
-        temperature=0.5,
-        max_tokens=200,
-        top_p=0.3,
-        frequency_penalty=0.5,
-        presence_penalty=0.0
-      )
-      for res in response['choices'][0]['text'].split('\n'):
-        if res != '':
-          conn.say(sendNick + ': ' + res, chan)
+    if data['sender'] == conn.trusted:
+      openai.api_key = os.getenv('OPENAI_API_KEY')
     else:
-      conn.say(sendNick + ': ' + cmd + ' command is not available at this time', chan)
+      try:
+        openai.api_key = conn.openai[data['nick']]
+      except:
+        conn.say('You need to register an api key to use this command\n\
+                  To register: /msg spacecake openai_register api_key', chan)
+    if openai.api_key != '':
+      try:
+        response = openai.Completion.create(
+          model='text-davinci-003',
+          prompt=' '.join(args[0:]),
+          temperature=0.5,
+          max_tokens=200,
+          top_p=0.3,
+          frequency_penalty=0.5,
+          presence_penalty=0.0
+        )
+        for res in response['choices'][0]['text'].split('\n'):
+          if res != '':
+            conn.say(sendNick + ': ' + res, chan)
+      except openai.error.AuthenticationError:
+        conn.say(sendNick + ': Your api key is invalid', chan)
+      except:
+        conn.say(sendNick + ': Something unexpected went wrong', chan)
+    else:
+      conn.say(sendNick + ': Your api key is an empty string. Try to register again', chan)
 
 def OnJoinFuncs(channel, conn):
   pass

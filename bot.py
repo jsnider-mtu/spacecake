@@ -73,6 +73,7 @@ class IRCConn(object):
     self.channels = set()
     self.nicks = {}
     self.lastMsg = {}
+    self.openai = {}
 
   def connect(self):
     self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -338,9 +339,8 @@ class IRCConn(object):
     Called once we have connected to and identified with the server.
     Mainly joins the channels that we want to join at the start.
     """
-    if 'GRP_PASS' in os.environ:
-      self.group(self.trusted.split('!')[0], os.getenv('GRP_PASS'))
-      self.identify(os.getenv('GRP_PASS'))
+    self.group(self.trusted.split('!')[0], os.getenv('GRP_PASS'))
+    self.identify(os.getenv('GRP_PASS'))
     for chan in self.join_first:
       self.join(chan)
     time.sleep(5)
@@ -383,6 +383,8 @@ class Bot(object):
       args = tokens[1:]
     except IndexError:
       args = []
+    if chan == self.conn.nick:
+      com.PMFuncs(cmd, args, data, self.conn)
     if is_to_me and cmd == 'reload':
       if data['sender'] == self.conn.trusted:
         reload(com)

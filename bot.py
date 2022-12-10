@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # coding=utf-8
+import json
 import com
 import socket
 import os
@@ -73,7 +74,11 @@ class IRCConn(object):
     self.channels = set()
     self.nicks = {}
     self.lastMsg = {}
-    self.openai = {}
+    try:
+      with open('/root/spacecake/openai.json', 'r') as f:
+        self.openai = json.loads(f.read())
+    except:
+      self.openai = {}
 
   def connect(self):
     self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

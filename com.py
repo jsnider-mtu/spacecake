@@ -9,6 +9,7 @@ Clean up formatting
 Add some comments (maybe)
 Exception handling
 """
+import json
 import openai
 import os
 import random
@@ -50,6 +51,9 @@ def PMFuncs(cmd, args, data, conn):
     if len(args) != 0:
       if args[0] != '':
         conn.openai[chan] = args[0]
+        openaijson = json.dumps(conn.openai)
+        with open('/root/spacecake/openai.json', 'w') as f:
+          f.write(openaijson)
         conn.say('Your openai api key has been stored.\n'\
                  'Use command .openai or !openai to talk '\
                  'to the AI chat bot.', chan)

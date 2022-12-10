@@ -144,7 +144,7 @@ def UnAddrFuncs(cmd, args, data, conn):
       model='text-davinci-003',
       prompt=' '.join(args[0:]),
       temperature=0.5,
-      max_tokens=60,
+      max_tokens=200,
       top_p=0.3,
       frequency_penalty=0.5,
       presence_penalty=0.0

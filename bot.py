@@ -373,6 +373,9 @@ class Bot(object):
       msg = "%s told spacecake: %s" % (nick, ' '.join(tokens))
       if nick != self.conn.trusted.split('!')[0]:
         self.conn.say(msg, self.conn.trusted.split('!')[0])
+      dm = True
+    else:
+      dm = False
     if tokens[0] == self.conn.nick:
       l = [tokens.pop(0)]
       is_to_me = True
@@ -389,7 +392,7 @@ class Bot(object):
     except IndexError:
       args = []
     print(chan)
-    if chan == self.conn.nick:
+    if dm:
       com.PMFuncs(cmd, args, data, self.conn)
     if is_to_me and cmd == 'reload':
       if data['sender'] == self.conn.trusted:

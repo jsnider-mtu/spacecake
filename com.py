@@ -50,9 +50,9 @@ def PMFuncs(cmd, args, data, conn):
     if len(args) != 0:
       if args[0] != '':
         conn.openai[chan] = args[0]
-        conn.say('Your openai api key has been stored.\n\
-                  Use command .openai or !openai to talk \
-                  to the AI chat bot.', chan)
+        conn.say('Your openai api key has been stored.\n'\
+                 'Use command .openai or !openai to talk '\
+                 'to the AI chat bot.', chan)
       else:
         conn.say('Usage: /msg spacecake openai_register api_key', chan)
     else:
@@ -159,8 +159,8 @@ def UnAddrFuncs(cmd, args, data, conn):
       try:
         openai.api_key = conn.openai[data['nick']]
       except:
-        conn.say('You need to register an api key to use this command\n\
-                  To register: /msg spacecake openai_register api_key', chan)
+        conn.say('You need to register an api key to use this command\n'\
+                 'To register: /msg spacecake openai_register api_key', chan)
     if openai.api_key != '':
       if len(args) != 0:
         try:

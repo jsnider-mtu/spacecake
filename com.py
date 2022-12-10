@@ -140,18 +140,21 @@ def UnAddrFuncs(cmd, args, data, conn):
     conn.describe(msg3, chan)
   elif cmd.lower() == '.openai' or cmd.lower() == '!openai':
     openai.api_key = os.getenv('OPENAI_API_KEY')
-    response = openai.Completion.create(
-      model='text-davinci-003',
-      prompt=' '.join(args[0:]),
-      temperature=0.5,
-      max_tokens=200,
-      top_p=0.3,
-      frequency_penalty=0.5,
-      presence_penalty=0.0
-    )
-    for res in response['choices'][0]['text'].split('\n'):
-      if res != '':
-        conn.say(res, chan)
+    if openai.api_key != '':
+      response = openai.Completion.create(
+        model='text-davinci-003',
+        prompt=' '.join(args[0:]),
+        temperature=0.5,
+        max_tokens=200,
+        top_p=0.3,
+        frequency_penalty=0.5,
+        presence_penalty=0.0
+      )
+      for res in response['choices'][0]['text'].split('\n'):
+        if res != '':
+          conn.say(sendNick + ': ' + res, chan)
+    else:
+      conn.say(sendNick + ': ' + cmd + ' command is not available at this time', chan)
 
 def OnJoinFuncs(channel, conn):
   pass

@@ -11,6 +11,10 @@ from logging.handlers import RotatingFileHandler
 from importlib import reload
 from ident import danknode
 
+if os.getenv('GRP_PASS') == '':
+  print('GRP_PASS env var not set')
+  sys.exit(1)
+
 # Setup log file
 formatter = logging.Formatter('%(asctime)s %(name)s - %(levelname)s: \
                                %(message)s')
@@ -327,7 +331,7 @@ class IRCConn(object):
         time.sleep(5)
         self.connect()
       else:
-        sys.exit(1)
+        sys.exit(2)
 
   def on_connect(self):
     """

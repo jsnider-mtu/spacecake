@@ -48,6 +48,7 @@ donger = ['ヽ〳 ՞ ᗜ ՞ 〵ง',
 def PMFuncs(cmd, args, data, conn):
   chan = data['nick']
   if cmd.lower() == 'openai_register':
+    print('openai_register called')
     if len(args) != 0:
       if args[0] != '':
         conn.openai[chan] = args[0]

@@ -177,7 +177,7 @@ def UnAddrFuncs(cmd, args, data, conn):
             if res != '':
               conn.say(sendNick + ': ' + res, chan)
         except openai.error.AuthenticationError:
-          conn.say(sendNick + ': Your api key is invalid', chan)
+          conn.say(sendNick + ': Your api key is invalid\nTry to register again', chan)
         except:
           conn.say(sendNick + ': Something unexpected went wrong', chan)
       else:

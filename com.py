@@ -492,12 +492,7 @@ def TexasBettingRound(game, conn, chan):
               conn.say(game.table.comm.cards(), chan)
               break
             else:
-              try:
-                winners, finalhandsdict = game.calculatewinners()
-              except Exception as e:
-                conn.say(sendNick + f": Exception hit: {e}", chan)
-                winners = ['exception']
-                finalhandsdict = {}
+              winners, finalhandsdict = game.calculatewinners()
               winmsg = "Winners:"
               for d in winners:
                 winmsg += f" {d}"

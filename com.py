@@ -194,12 +194,24 @@ def UnAddrFuncs(cmd, args, data, conn):
     else:
       conn.say(sendNick + ': Your api key is an empty string. Try to register again', chan)
   elif cmd.lower() == '.texas' or cmd.lower() == '!texas':
+    if len(args) == 0:
+      conn.say(".texas commands: newgame, list, join, start, bet, check, fold, hand, balance", chan)
+      return
     texasplayers = []
     for z in texasgames:
       for a in z.table.seats:
         if a.isfilled():
           texasplayers.append(a.p.name)
     if sendNick not in texasplayers:
+      if args[0].lower() == 'list':
+        conn.say("Current games:", chan)
+        for x in texasgames:
+          curplayers = ""
+          for y in x.table.seats:
+            if y.isfilled():
+              curplayers += f" {y.p.name}"
+          conn.say(f"{x.name} -- Current players:{curplayers}", chan)
+        return
       if args[0].lower() == 'newgame':
         if len(args) != 2:
           conn.say(sendNick + ": Usage: '.texas newgame <name>'", chan)

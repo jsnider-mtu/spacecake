@@ -293,26 +293,28 @@ def UnAddrFuncs(cmd, args, data, conn):
               if y.p.name == sendNick:
                 x.playerleave(y.p)
                 if x.table.inplay() == 1:
-                  winners, finalhandsdict = x.calculatewinners()
-                  winmsg = "Winners:"
-                  for d in winners:
-                    winmsg += f" {d}"
-                  conn.say(winmsg, chan)
-                  conn.say("Final hands:", chan)
-                  for k, v in finalhandsdict.items():
-                    finmsg = f"{k}:"
-                    for e in v:
-                      finmsg += f" {e};"
-                    conn.say(finmsg, chan)
-                  # Restart next hand somehow
-                  x.table.deepclean()
-                  x.dealer += 1
-                  if x.dealer == x.table.seatstaken():
-                    x.dealer = 0
-                  x.playerturn = 3 + x.dealer
-                  x.running = False
-                  conn.say("'.texas start' to deal the next hand", chan)
+                  TexasWinCalc(x, conn, chan)
                   return
+#                  winners, finalhandsdict = x.calculatewinners()
+#                  winmsg = "Winners:"
+#                  for d in winners:
+#                    winmsg += f" {d}"
+#                  conn.say(winmsg, chan)
+#                  conn.say("Final hands:", chan)
+#                  for k, v in finalhandsdict.items():
+#                    finmsg = f"{k}:"
+#                    for e in v:
+#                      finmsg += f" {e};"
+#                    conn.say(finmsg, chan)
+#                  # Restart next hand somehow
+#                  x.table.deepclean()
+#                  x.dealer += 1
+#                  if x.dealer == x.table.seatstaken():
+#                    x.dealer = 0
+#                  x.playerturn = 3 + x.dealer
+#                  x.running = False
+#                  conn.say("'.texas start' to deal the next hand", chan)
+#                  return
       elif args[0].lower() == 'bet':
         if len(args) != 2:
           conn.say(sendNick + ": Usage: '.texas bet <integer>' (floating point numbers will be truncated)", chan)
@@ -371,26 +373,28 @@ def UnAddrFuncs(cmd, args, data, conn):
                 if y.p.fold():
                   conn.say(sendNick + " has just folded", chan)
                   if x.table.inplay() == 1:
-                    winners, finalhandsdict = x.calculatewinners()
-                    winmsg = "Winners:"
-                    for d in winners:
-                      winmsg += f" {d}"
-                    conn.say(winmsg, chan)
-                    conn.say("Final hands:", chan)
-                    for k, v in finalhandsdict.items():
-                      finmsg = f"{k}:"
-                      for e in v:
-                        finmsg += f" {e};"
-                      conn.say(finmsg, chan)
-                    # Restart next hand somehow
-                    x.table.deepclean()
-                    x.dealer += 1
-                    if x.dealer == x.table.seatstaken():
-                      x.dealer = 0
-                    x.playerturn = 3 + x.dealer
-                    x.running = False
-                    conn.say("'.texas start' to deal the next hand", chan)
+                    TexasWinCalc(x, conn, chan)
                     return
+#                    winners, finalhandsdict = x.calculatewinners()
+#                    winmsg = "Winners:"
+#                    for d in winners:
+#                      winmsg += f" {d}"
+#                    conn.say(winmsg, chan)
+#                    conn.say("Final hands:", chan)
+#                    for k, v in finalhandsdict.items():
+#                      finmsg = f"{k}:"
+#                      for e in v:
+#                        finmsg += f" {e};"
+#                      conn.say(finmsg, chan)
+#                    # Restart next hand somehow
+#                    x.table.deepclean()
+#                    x.dealer += 1
+#                    if x.dealer == x.table.seatstaken():
+#                      x.dealer = 0
+#                    x.playerturn = 3 + x.dealer
+#                    x.running = False
+#                    conn.say("'.texas start' to deal the next hand", chan)
+#                    return
                   x.playerturn += 1
                   TexasBettingRound(x, conn, chan)
                   cleaned = True
@@ -492,26 +496,28 @@ def TexasBettingRound(game, conn, chan):
               conn.say(game.table.comm.cards(), chan)
               break
             else:
-              winners, finalhandsdict = game.calculatewinners()
-              winmsg = "Winners:"
-              for d in winners:
-                winmsg += f" {d}"
-              conn.say(winmsg, chan)
-              conn.say("Final hands:", chan)
-              for k, v in finalhandsdict.items():
-                finmsg = f"{k}:"
-                for e in v:
-                  finmsg += f" {e};"
-                conn.say(finmsg, chan)
-              # Restart next hand somehow
-              game.table.deepclean()
-              game.dealer += 1
-              if game.dealer == game.table.seatstaken():
-                game.dealer = 0
-              game.playerturn = 3 + game.dealer
-              game.running = False
-              conn.say("'.texas start' to deal the next hand", chan)
+              TexasWinCalc(x, conn, chan)
               return
+#              winners, finalhandsdict = game.calculatewinners()
+#              winmsg = "Winners:"
+#              for d in winners:
+#                winmsg += f" {d}"
+#              conn.say(winmsg, chan)
+#              conn.say("Final hands:", chan)
+#              for k, v in finalhandsdict.items():
+#                finmsg = f"{k}:"
+#                for e in v:
+#                  finmsg += f" {e};"
+#                conn.say(finmsg, chan)
+#              # Restart next hand somehow
+#              game.table.deepclean()
+#              game.dealer += 1
+#              if game.dealer == game.table.seatstaken():
+#                game.dealer = 0
+#              game.playerturn = 3 + game.dealer
+#              game.running = False
+#              conn.say("'.texas start' to deal the next hand", chan)
+#              return
           else:
             conn.say(f"Player {b.p.name}'s turn. Current bet is ${game.table.pot.lastbet}", chan)
             b.p.turn = True
@@ -528,3 +534,24 @@ def TexasBettingRound(game, conn, chan):
               conn.say("Something wonky happened", chan)
         else:
           continue
+
+def TexasWinCalc(x, conn, chan):
+  winners, finalhandsdict = x.calculatewinners()
+  winmsg = "Winners:"
+  for d in winners:
+    winmsg += f" {d}"
+  conn.say(winmsg, chan)
+  conn.say("Final hands:", chan)
+  for k, v in finalhandsdict.items():
+    finmsg = f"{k}:"
+    for e in v:
+      finmsg += f" {e};"
+    conn.say(finmsg, chan)
+  # Restart next hand somehow
+  x.table.deepclean()
+  x.dealer += 1
+  if x.dealer == x.table.seatstaken():
+    x.dealer = 0
+  x.playerturn = 3 + x.dealer
+  x.running = False
+  conn.say("'.texas start' to deal the next hand", chan)

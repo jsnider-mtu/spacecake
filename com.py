@@ -148,11 +148,11 @@ def UnAddrFuncs(cmd, args, data, conn):
     results = {}
     for die in dice:
       if re.fullmatch(r"\d*d\d+", die) != None:
-        n = int(die[:die.index('d')])
+        n = die[:die.index('d')]
         if n == '':
           results[die] = random.randint(1, int(die[die.index('d') + 1:]))
         else:
-          for x in range(n):
+          for x in range(int(n)):
             try:
               results[die] += random.randint(1, int(die[die.index('d') + 1:]))
             except KeyError:

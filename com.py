@@ -15,6 +15,9 @@ import os
 import random
 import re
 import time
+import texas
+
+texasgames = []
 
 donger = ['ヽ〳 ՞ ᗜ ՞ 〵ง',
   's( ^ ‿ ^)-b',
@@ -190,6 +193,207 @@ def UnAddrFuncs(cmd, args, data, conn):
         conn.say('To register: /msg spacecake openai_register api_key\nUsage: .openai message', chan)
     else:
       conn.say(sendNick + ': Your api key is an empty string. Try to register again', chan)
+  elif cmd.lower() == '.texas' or cmd.lower() == '!texas':
+    texasplayers = []
+    for z in texasgames:
+      for a in z.table.seats:
+        if a.isfilled():
+          texasplayers.append(a.p.name)
+    if sendNick not in texasplayers:
+      if args[0].lower() == 'newgame':
+        if len(args) != 2:
+          conn.say(sendNick + ": Usage: '.texas newgame <name>'", chan)
+        else:
+          for z in texasgames:
+            if args[1] == z.name:
+              conn.say(sendNick + f": The name {args[1]} is already taken", chan)
+              return
+          texasgames.append(texas.Game(args[1]))
+          for z in texasgames:
+            if z.name == args[1]:
+              if z.playerjoin(texas.Player(sendNick)):
+                conn.say(f"Texas Hold 'Em game {z.name} has been started by {sendNick}. Use '.texas join {z.name}' to join", chan)
+              else:
+                conn.say("Something went wrong starting a game (ノ°▽°)ノ︵┻━┻", chan)
+      elif args[0].lower() == 'join':
+        if len(args) != 2:
+          conn.say(sendNick + ": Usage: '.texas join <name>'", chan)
+        else:
+          for z in texasgames:
+            if args[1] == z.name:
+              if z.playerjoin(texas.Player(sendNick)):
+                conn.say(f"{sendNick} has joined the {z.name} Texas Hold 'Em game", chan)
+                return
+              else:
+                conn.say(f"The {z.name} Texas Hold 'Em game is full, sorry {sendNick}", chan)
+          conn.say(f"Game {args[1]} not found", chan)
+      else:
+        conn.say(sendNick + ": You aren't currently in a game. Use '.texas join <name>' to join a game", chan)
+        conn.say("Or use '.texas newgame <name>' to start a new one", chan)
+        conn.say("Current games:", chan)
+        for x in texasgames:
+          curplayers = ""
+          for y in x.table.seats:
+            if y.isfilled():
+              curplayers += f" {y.p.name}"
+          conn.say(f"{x.name} -- Current players:{curplayers}", chan)
+    else:
+      if args[0].lower() == 'newgame' or args[0].lower() == 'join':
+        conn.say(sendNick + ": Must leave your current game before creating or joining a new one", chan)
+        conn.say("'.texas quit' to leave your current game", chan)
+      elif args[0].lower() == 'start':
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick:
+                for z in x.table.seats:
+                  if z.isfilled():
+                    if z.p.purse < x.table.bigblind:
+                      if x.playerleave(z.p):
+                        conn.say(f"{z.p.name} has insufficient funds and has left the {x.name} table", chan)
+                      else:
+                        conn.say("Something went wrong in playerleave() (ノ°▽°)ノ︵┻━┻", chan)
+                    else:
+                      z.justsat = False
+                if x.table.isready():
+                  x.d.shuffle()
+                  msg = x.blinds()
+                  conn.say(msg)
+                  for a in range(2):
+                    for b in x.table.seats:
+                      if b.isfilled():
+                        if !b.justsat:
+                          x.d.deal(b.p)
+                  a = x.dealer
+                  for b in x.table.seats:
+                    if b.isfilled():
+                      if !b.justsat and !b.p.folded:
+                        a++
+                        if a == x.table.seatstaken():
+                          a = 0
+                        if a == (x.dealer + x.playerturn) % x.table.inplay()
+                          conn.say(f"Player {b.p.name}'s turn. Current bet is ${x.table.pot.lastbet}", chan)
+                          b.p.turn = True
+                          if !b.p.hasbet:
+                            if x.table.pot.lastbet == 0:
+                              b.p.minbet = 0
+                            elif x.table.pot.lastbet >= b.p.purse:
+                              b.p.minbet = b.p.purse
+                            else:
+                              b.p.minbet = x.table.pot.lastbet
+                          elif b.p.lastbet < x.table.pot.lastbet:
+                            b.p.minbet = x.table.pot.lastbet
+                          else:
+                            conn.say("Something wonky happened", chan)
+                        else:
+                          continue
+                else:
+                  conn.say(f"Not enough players to start game {x.name}", chan)
+      elif args[0].lower() == 'quit':
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick:
+                x.playerleave(y.p)
+      elif args[0].lower() == 'bet':
+        if len(args) != 2:
+          conn.say(sendNick + ": Usage: '.texas bet <integer>' (floating point numbers will be truncated)", chan)
+          return
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick and !y.justsat and !y.p.folded:
+                try:
+                  diff = int(args[1]) - y.p.lastbet
+                  if int(args[1]) >= y.p.minbet:
+                    if diff <= y.p.purse:
+                      if y.p.bet(int(args[1]), diff):
+                        x.table.pot.add(int(args[1]), diff)
+                        conn.say(sendNick + f" has just bet ${int(args[1])}", chan)
+                        x.playerturn++
+                        a = x.dealer
+                        for b in x.table.seats:
+                          if b.isfilled():
+                            if !b.justsat and !b.p.folded:
+                              a++
+                              if a == x.table.seatstaken():
+                                a = 0
+                              if a == (x.dealer + x.playerturn) % x.table.inplay()
+                                if b.p.hasbet and b.p.lastbet == x.table.pot.lastbet:
+                                  conn.say(f"Betting round over, current pot is ${x.table.pot.pot}", chan)
+                                  if x.table.comm.flopcards == None:
+                                    flopcardsmsg = "The Flop:"
+                                    x.table.comm.flop()
+                                    for c in x.table.comm.flopcards:
+                                      flopcardsmsg += f" {c};"
+                                    conn.say(flopcardsmsg, chan)
+                                    conn.say(x.table.comm.cards(), chan)
+                                    return
+                                  elif x.table.comm.turncard == None:
+                                    x.table.comm.turn()
+                                    conn.say(f"The Turn: {x.table.comm.turncard}", chan)
+                                    conn.say(x.table.comm.cards(), chan)
+                                    return
+                                  elif x.table.comm.rivercard == None:
+                                    x.table.comm.river()
+                                    conn.say(f"The River: {x.table.comm.rivercard}", chan)
+                                    conn.say(x.table.comm.cards(), chan)
+                                    return
+                                  else:
+                                    winners = x.calculatewinners()
+                                else:
+                                  conn.say(f"Player {b.p.name}'s turn. Current bet is ${x.table.pot.lastbet}", chan)
+                                  b.p.turn = True
+                                  if !b.p.hasbet:
+                                    if x.table.pot.lastbet == 0:
+                                      b.p.minbet = 0
+                                    elif x.table.pot.lastbet >= b.p.purse:
+                                      b.p.minbet = b.p.purse
+                                    else:
+                                      b.p.minbet = x.table.pot.lastbet
+                                  elif b.p.lastbet < x.table.pot.lastbet:
+                                    b.p.minbet = x.table.pot.lastbet
+                              else:
+                                continue
+                      else:
+                        conn.say("Something went wrong in bet() (ノ°▽°)ノ︵┻━┻", chan)
+                    else:
+                      conn.say(sendNick + f": ${int(args[1])} is more than you have to bet (you have ${y.p.purse})", chan)
+                  else:
+                    conn.say(sendNick + f": ${int(args[1])} is less than the minimum bet of ${y.p.minbet}", chan)
+                except ValueError:
+                  conn.say(sendNick + f": {args[1]} is not an integer", chan)
+      elif args[0].lower() == 'check':
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick and !y.justsat and !y.p.folded:
+                if y.p.check():
+                  conn.say(sendNick + " has just checked", chan)
+                else:
+                  conn.say(sendNick + f": you cannot check here, minimum bet is ${y.p.minbet}", chan)
+      elif args[0].lower() == 'fold':
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick and !y.justsat and !y.p.folded:
+                if y.p.fold():
+                  conn.say(sendNick + " has just folded", chan)
+                else:
+                  conn.say("Something went wrong in fold() (ノ°▽°)ノ︵┻━┻", chan)
+      elif args[0].lower() == 'hand':
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick and !y.justsat and !y.p.folded:
+                conn.say(f"You have {y.p.hand} in your hand", sendNick)
+                conn.say(f"Check your DMs {sendNick}", chan)
+      elif args[0].lower() == 'balance':
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick:
+                conn.say(sendNick + f" has a balance of ${y.p.purse}")
 
 def OnJoinFuncs(channel, conn):
   pass

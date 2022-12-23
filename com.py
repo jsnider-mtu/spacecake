@@ -150,16 +150,19 @@ def UnAddrFuncs(cmd, args, data, conn):
       if re.fullmatch(r"\d*d\d+", die) != None:
         n = die[:die.index('d')]
         if n == '':
-          results[die] = random.randint(1, int(die[die.index('d') + 1:]))
+          results[die] = [random.randint(1, int(die[die.index('d') + 1:]))]
         else:
           for x in range(int(n)):
             try:
-              results[die] += random.randint(1, int(die[die.index('d') + 1:]))
+              results[die] += [random.randint(1, int(die[die.index('d') + 1:]))]
             except KeyError:
-              results[die] = random.randint(1, int(die[die.index('d') + 1:]))
+              results[die] = [random.randint(1, int(die[die.index('d') + 1:]))]
     msg = ""
     for k, v in results.items():
-      msg += f"{k}: {v}\n"
+      sum = 0
+      for y in v:
+        sum += y
+      msg += f"{k}: {sum} {v}\n"
     conn.say(msg, chan)
   elif cmd.lower() == 'happy':
     if args[0].lower() == 'birthday' or args[0].lower() == 'bday':

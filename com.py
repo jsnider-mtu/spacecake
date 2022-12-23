@@ -138,6 +138,29 @@ def UnAddrFuncs(cmd, args, data, conn):
       conn.say('i fucked up', chan)
   elif cmd.lower() == '!help' or cmd.lower() == '.help':
     conn.say("Help will be coming soon (but I don't promise)", chan)
+  elif cmd.lower() == '!roll' or cmd.lower() == '.roll':
+    if len(args) >= 1:
+      dice = []
+      for die in args:
+        dice.append(die)
+    else:
+      dice = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100']
+    results = {}
+    for die in dice:
+      if re.fullmatch(r"\d*d\d+", die) != None:
+        n = int(die[:die.index('d')])
+        if n = '':
+          results[die] = random.randint(1, int(die[die.index('d') + 1:]))
+        else:
+          for x in range(n):
+            try:
+              results[die] += random.randint(1, int(die[die.index('d') + 1:]))
+            except KeyError:
+              results[die] = random.randint(1, int(die[die.index('d') + 1:]))
+    msg = ""
+    for k, v in results.items():
+      msg += f"{k}: {v}\n"
+    conn.say(msg, chan)
   elif cmd.lower() == 'happy':
     if args[0].lower() == 'birthday' or args[0].lower() == 'bday':
       conn.say('♪O<( ･ ∀ ･ )っ┌iii┐', chan)

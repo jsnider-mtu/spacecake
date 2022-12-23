@@ -137,7 +137,12 @@ def UnAddrFuncs(cmd, args, data, conn):
     else:
       conn.say('i fucked up', chan)
   elif cmd.lower() == '!help' or cmd.lower() == '.help':
-    conn.say("Help will be coming soon (but I don't promise)", chan)
+    msg = "Unaddressed Functions:\n----------------------\n.help\n.roll\n.flip\n"+\
+          ".unflip\n.openai\n.texas\n\nAddressed Functions (e.g. spacecake <cmd>):\n"+\
+          "-------------------------------------------\nslap <nick>\n\n"+\
+          "PM Functions (e.g. /msg spacecake <cmd>):\n-----------------------------------------\n"+\
+          "openai_register"
+    conn.say(msg, chan)
   elif cmd.lower() == '!roll' or cmd.lower() == '.roll':
     if len(args) >= 1:
       dice = []

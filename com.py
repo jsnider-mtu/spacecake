@@ -416,8 +416,12 @@ def UnAddrFuncs(cmd, args, data, conn):
         for x in texasgames:
           for y in x.table.seats:
             if y.isfilled():
-              if y.p.name == sendNick:
-                conn.say(sendNick + f" has a balance of ${y.p.purse}", chan)
+              if len(args) == 2:
+                if y.p.name == args[1]:
+                  conn.say(args[1] + f" has a balance of ${y.p.purse}", chan)
+              else:
+                if y.p.name == sendNick:
+                  conn.say(sendNick + f" has a balance of ${y.p.purse}", chan)
 
 def OnJoinFuncs(channel, conn):
   pass

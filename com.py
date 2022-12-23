@@ -202,16 +202,16 @@ def UnAddrFuncs(cmd, args, data, conn):
       for a in z.table.seats:
         if a.isfilled():
           texasplayers.append(a.p.name)
+    if args[0].lower() == 'list':
+      conn.say("Current games:", chan)
+      for x in texasgames:
+        curplayers = ""
+        for y in x.table.seats:
+          if y.isfilled():
+            curplayers += f" {y.p.name}"
+        conn.say(f"{x.name} -- Current players:{curplayers}", chan)
+      return
     if sendNick not in texasplayers:
-      if args[0].lower() == 'list':
-        conn.say("Current games:", chan)
-        for x in texasgames:
-          curplayers = ""
-          for y in x.table.seats:
-            if y.isfilled():
-              curplayers += f" {y.p.name}"
-          conn.say(f"{x.name} -- Current players:{curplayers}", chan)
-        return
       if args[0].lower() == 'newgame':
         if len(args) != 2:
           conn.say(sendNick + ": Usage: '.texas newgame <name>'", chan)
@@ -270,7 +270,7 @@ def UnAddrFuncs(cmd, args, data, conn):
                 if x.table.isready():
                   x.d.shuffle()
                   msg = x.blinds()
-                  conn.say(msg)
+                  conn.say(msg, chan)
                   for a in range(2):
                     for b in x.table.seats:
                       if b.isfilled():
@@ -314,7 +314,7 @@ def UnAddrFuncs(cmd, args, data, conn):
         for x in texasgames:
           for y in x.table.seats:
             if y.isfilled():
-              if y.p.name == sendNick and y.justsat == False and y.p.folded == False:
+              if y.p.name == sendNick and y.justsat == False and y.p.folded == False and y.p.turn == True:
                 try:
                   diff = int(args[1]) - y.p.lastbet
                   if int(args[1]) >= y.p.minbet:
@@ -335,19 +335,19 @@ def UnAddrFuncs(cmd, args, data, conn):
                                   conn.say(f"Betting round over, current pot is ${x.table.pot.pot}", chan)
                                   if x.table.comm.flopcards == None:
                                     flopcardsmsg = "The Flop:"
-                                    x.table.comm.flop()
+                                    x.table.comm.flop(x.d)
                                     for c in x.table.comm.flopcards:
                                       flopcardsmsg += f" {c};"
                                     conn.say(flopcardsmsg, chan)
                                     conn.say(x.table.comm.cards(), chan)
                                     return
                                   elif x.table.comm.turncard == None:
-                                    x.table.comm.turn()
+                                    x.table.comm.turn(x.d)
                                     conn.say(f"The Turn: {x.table.comm.turncard}", chan)
                                     conn.say(x.table.comm.cards(), chan)
                                     return
                                   elif x.table.comm.rivercard == None:
-                                    x.table.comm.river()
+                                    x.table.comm.river(x.d)
                                     conn.say(f"The River: {x.table.comm.rivercard}", chan)
                                     conn.say(x.table.comm.cards(), chan)
                                     return

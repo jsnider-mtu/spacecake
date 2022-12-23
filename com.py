@@ -547,6 +547,13 @@ def TexasWinCalc(x, conn, chan):
     for e in v:
       finmsg += f" {e};"
     conn.say(finmsg, chan)
+  if len(winners) == 1:
+    payout = x.table.pot.pot
+  else:
+    payout = int(x.table.pot.pot / len(winners))
+  for b in x.table.seats:
+    if b.p.name in winners:
+      b.p.purse += payout
   # Restart next hand somehow
   x.table.deepclean()
   x.dealer += 1

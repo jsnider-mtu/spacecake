@@ -292,9 +292,12 @@ def UnAddrFuncs(cmd, args, data, conn):
             if y.isfilled():
               if y.p.name == sendNick:
                 x.playerleave(y.p)
-                if x.table.inplay() == 1:
+                if x.table.inplay() == 1 and x.running == True:
                   TexasWinCalc(x, conn, chan)
                   return
+                if x.table.seatstaken() == 0:
+                  texasgames.remove(x)
+                  del x
       elif args[0].lower() == 'bet':
         if len(args) != 2:
           conn.say(sendNick + ": Usage: '.texas bet <integer>' (floating point numbers will be truncated)", chan)

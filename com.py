@@ -268,10 +268,10 @@ def UnAddrFuncs(cmd, args, data, conn):
                   for b in x.table.seats:
                     if b.isfilled():
                       if b.justsat == False and b.p.folded == False:
-                        a++
+                        a += 1
                         if a == x.table.seatstaken():
                           a = 0
-                        if a == (x.dealer + x.playerturn) % x.table.inplay()
+                        if a == (x.dealer + x.playerturn) % x.table.inplay():
                           conn.say(f"Player {b.p.name}'s turn. Current bet is ${x.table.pot.lastbet}", chan)
                           b.p.turn = True
                           if b.p.hasbet == False:
@@ -310,15 +310,15 @@ def UnAddrFuncs(cmd, args, data, conn):
                       if y.p.bet(int(args[1]), diff):
                         x.table.pot.add(int(args[1]), diff)
                         conn.say(sendNick + f" has just bet ${int(args[1])}", chan)
-                        x.playerturn++
+                        x.playerturn += 1
                         a = x.dealer
                         for b in x.table.seats:
                           if b.isfilled():
                             if b.justsat == False and b.p.folded == False:
-                              a++
+                              a += 1
                               if a == x.table.seatstaken():
                                 a = 0
-                              if a == (x.dealer + x.playerturn) % x.table.inplay()
+                              if a == (x.dealer + x.playerturn) % x.table.inplay():
                                 if b.p.hasbet and b.p.lastbet == x.table.pot.lastbet:
                                   conn.say(f"Betting round over, current pot is ${x.table.pot.pot}", chan)
                                   if x.table.comm.flopcards == None:

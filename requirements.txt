@@ -1,0 +1,2 @@
+-e git+ssh://git@github.com/jsnider-mtu/texas.git#egg=texas
+openai

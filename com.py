@@ -15,6 +15,9 @@ import os
 import random
 import re
 import time
+import texas
+
+texasgames = []
 
 donger = ['ヽ〳 ՞ ᗜ ՞ 〵ง',
   's( ^ ‿ ^)-b',
@@ -190,6 +193,202 @@ def UnAddrFuncs(cmd, args, data, conn):
         conn.say('To register: /msg spacecake openai_register api_key\nUsage: .openai message', chan)
     else:
       conn.say(sendNick + ': Your api key is an empty string. Try to register again', chan)
+  elif cmd.lower() == '.texas' or cmd.lower() == '!texas':
+    if len(args) == 0:
+      conn.say(".texas commands: newgame, list, join, start, bet, check, fold, hand, balance", chan)
+      return
+    texasplayers = []
+    for z in texasgames:
+      for a in z.table.seats:
+        if a.isfilled():
+          texasplayers.append(a.p.name)
+    if args[0].lower() == 'list':
+      conn.say("Current games:", chan)
+      for x in texasgames:
+        curplayers = ""
+        for y in x.table.seats:
+          if y.isfilled():
+            curplayers += f" {y.p.name}"
+        conn.say(f"{x.name} <--> Current players:{curplayers}", chan)
+      return
+    if sendNick not in texasplayers:
+      if args[0].lower() == 'newgame':
+        if len(args) != 2:
+          conn.say(sendNick + ": Usage: '.texas newgame <name>'", chan)
+        else:
+          for z in texasgames:
+            if args[1] == z.name:
+              conn.say(sendNick + f": The name {args[1]} is already taken", chan)
+              return
+          texasgames.append(texas.Game(args[1]))
+          for z in texasgames:
+            if z.name == args[1]:
+              if z.playerjoin(texas.Player(sendNick)):
+                conn.say(f"Texas Hold 'Em game \"{z.name}\" has been created by {sendNick}. Use '.texas join {z.name}' to join", chan)
+              else:
+                conn.say("Something went wrong starting a game (ノ°▽°)ノ︵┻━┻", chan)
+      elif args[0].lower() == 'join':
+        if len(args) != 2:
+          conn.say(sendNick + ": Usage: '.texas join <name>'", chan)
+        else:
+          for z in texasgames:
+            if args[1] == z.name:
+              if z.playerjoin(texas.Player(sendNick)):
+                conn.say(f"{sendNick} has joined the \"{z.name}\" Texas Hold 'Em game", chan)
+                return
+              else:
+                conn.say(f"The {z.name} Texas Hold 'Em game is full, sorry {sendNick}", chan)
+          conn.say(f"Game {args[1]} not found", chan)
+      else:
+        conn.say(sendNick + ": You aren't currently in a game. Use '.texas join <name>' to join a game", chan)
+        conn.say("Or use '.texas newgame <name>' to start a new one", chan)
+        conn.say("Current games:", chan)
+        for x in texasgames:
+          curplayers = ""
+          for y in x.table.seats:
+            if y.isfilled():
+              curplayers += f" {y.p.name}"
+          conn.say(f"{x.name} <--> Current players:{curplayers}", chan)
+    else:
+      if args[0].lower() == 'newgame' or args[0].lower() == 'join':
+        conn.say(sendNick + ": Must leave your current game before creating or joining a new one", chan)
+        conn.say("'.texas quit' to leave your current game", chan)
+      elif args[0].lower() == 'start':
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick:
+                for z in x.table.seats:
+                  if z.isfilled():
+                    if z.p.purse < x.table.bigblind:
+                      if x.playerleave(z.p):
+                        conn.say(f"{z.p.name} has insufficient funds and has left the {x.name} table", chan)
+                      else:
+                        conn.say("Something went wrong in playerleave() (ノ°▽°)ノ︵┻━┻", chan)
+                    else:
+                      z.justsat = False
+                if x.running == True:
+                  conn.say(sendNick + f": Your game \"{x.name}\" is in the middle of a hand", chan)
+                elif x.table.isready():
+                  x.running = True
+                  x.d.shuffle()
+                  msg = x.blinds()
+                  conn.say(msg, chan)
+                  for a in range(2):
+                    for b in x.table.seats:
+                      if b.isfilled():
+                        if b.justsat == False:
+                          x.d.deal(b.p)
+                  for c in x.table.seats:
+                    if c.isfilled():
+                      if c.justsat == False:
+                        conn.say(f"Your hand: {c.p.hand}", c.p.name)
+                  TexasNextTurn(x, conn, chan)
+                else:
+                  conn.say(f"Not enough players to start game \"{x.name}\"", chan)
+      elif args[0].lower() == 'quit':
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick:
+                x.playerleave(y.p)
+                if x.table.inplay() == 1 and x.running == True:
+                  TexasWinCalc(x, conn, chan)
+                  return
+                if x.table.seatstaken() == 0:
+                  texasgames.remove(x)
+                  del x
+      elif args[0].lower() == 'bet':
+        if len(args) != 2:
+          conn.say(sendNick + ": Usage: '.texas bet <integer>' (floating point numbers will be truncated)", chan)
+          return
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick and y.justsat == False and y.p.folded == False and y.p.turn == True:
+                try:
+                  diff = int(args[1]) - y.p.lastbet
+                  if int(args[1]) >= y.p.minbet:
+                    if diff <= y.p.purse:
+                      if y.p.bet(int(args[1]), diff):
+                        x.table.pot.add(int(args[1]), diff)
+                        conn.say(sendNick + f" has just bet ${int(args[1])}", chan)
+                        x.playerturn += 1
+                        TexasBettingRound(x, conn, chan)
+                        if x.table.pot.lastbet == 0:
+                          x.playerturn = 3
+                          TexasNextTurn(x, conn, chan)
+                        break
+                      else:
+                        conn.say("Something went wrong in bet() (ノ°▽°)ノ︵┻━┻", chan)
+                    else:
+                      conn.say(sendNick + f": ${int(args[1])} is more than you have to bet (you have ${y.p.purse})", chan)
+                  else:
+                    conn.say(sendNick + f": ${int(args[1])} is less than the minimum bet of ${y.p.minbet}", chan)
+                except ValueError:
+                  conn.say(sendNick + f": {args[1]} is not an integer", chan)
+      elif args[0].lower() == 'check':
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick and y.justsat == False and y.p.folded == False:
+                if y.p.check():
+                  conn.say(sendNick + " has just checked", chan)
+                  x.playerturn += 1
+                  TexasBettingRound(x, conn, chan)
+                  cleaned = True
+                  for c in x.table.seats:
+                    if c.isfilled():
+                      if c.p.hasbet == True:
+                        cleaned = False
+                        break
+                  if cleaned:
+                    x.playerturn = 3
+                    TexasNextTurn(x, conn, chan)
+                  break
+                else:
+                  conn.say(sendNick + f": you cannot check here, minimum bet is ${y.p.minbet}", chan)
+      elif args[0].lower() == 'fold':
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick and y.justsat == False and y.p.folded == False:
+                if y.p.fold():
+                  conn.say(sendNick + " has just folded", chan)
+                  if x.table.inplay() == 1:
+                    TexasWinCalc(x, conn, chan)
+                    return
+                  x.playerturn += 1
+                  TexasBettingRound(x, conn, chan)
+                  cleaned = True
+                  for c in x.table.seats:
+                    if c.isfilled():
+                      if c.p.hasbet == True:
+                        cleaned = False
+                        break
+                  if cleaned:
+                    x.playerturn = 3
+                    TexasNextTurn(x, conn, chan)
+                  break
+                else:
+                  conn.say("Something went wrong in fold() (ノ°▽°)ノ︵┻━┻", chan)
+      elif args[0].lower() == 'hand':
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick and y.justsat == False and y.p.folded == False:
+                conn.say(f"You have {y.p.hand} in your hand", sendNick)
+                conn.say(f"Check your DMs {sendNick}", chan)
+      elif args[0].lower() == 'balance':
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if len(args) == 2:
+                if y.p.name == args[1]:
+                  conn.say(args[1] + f" has a balance of ${y.p.purse}", chan)
+              else:
+                if y.p.name == sendNick:
+                  conn.say(sendNick + f" has a balance of ${y.p.purse}", chan)
 
 def OnJoinFuncs(channel, conn):
   pass
@@ -205,3 +404,105 @@ def OnKickedFuncs(msg, data, conn):
 def OtherKickedFuncs(msg, data, conn):
   chan = data['channel']
   conn.say('╭∩╮ʕ•ᴥ•ʔ╭∩╮', chan)
+
+def TexasNextTurn(game, conn, chan):
+  curturn = game.playerturn % game.table.inplay()
+  c = -1
+  for b in game.table.seats:
+    if b.isfilled():
+      if b.justsat == False and b.p.folded == False:
+        c += 1
+        if c == curturn:
+          conn.say(f"Player {b.p.name}'s turn. Current bet is ${game.table.pot.lastbet}", chan)
+          b.p.turn = True
+          if b.p.hasbet == False:
+            if game.table.pot.lastbet == 0:
+              b.p.minbet = 0
+            elif game.table.pot.lastbet >= b.p.purse:
+              b.p.minbet = b.p.purse
+            else:
+              b.p.minbet = game.table.pot.lastbet
+          elif b.p.lastbet < game.table.pot.lastbet:
+            b.p.minbet = game.table.pot.lastbet
+          else:
+            conn.say("Something wonky happened", chan)
+        else:
+          continue
+
+def TexasBettingRound(game, conn, chan):
+  curturn = game.playerturn % game.table.inplay()
+  c = -1
+  for b in game.table.seats:
+    if b.isfilled():
+      if b.justsat == False and b.p.folded == False:
+        c += 1
+        if c == curturn:
+          if b.p.hasbet and b.p.lastbet == game.table.pot.lastbet:
+            conn.say(f"Betting round over, current pot is ${game.table.pot.pot}", chan)
+            game.table.clean()
+            if game.table.comm.flopcards == None:
+              flopcardsmsg = "The Flop:"
+              game.table.comm.flop(game.d)
+              for c in game.table.comm.flopcards:
+                flopcardsmsg += f" {c};"
+              conn.say(flopcardsmsg, chan)
+              conn.say(game.table.comm.cards(), chan)
+              break
+            elif game.table.comm.turncard == None:
+              game.table.comm.turn(game.d)
+              conn.say(f"The Turn: {game.table.comm.turncard}", chan)
+              conn.say(game.table.comm.cards(), chan)
+              break
+            elif game.table.comm.rivercard == None:
+              game.table.comm.river(game.d)
+              conn.say(f"The River: {game.table.comm.rivercard}", chan)
+              conn.say(game.table.comm.cards(), chan)
+              break
+            else:
+              TexasWinCalc(x, conn, chan)
+              return
+          else:
+            conn.say(f"Player {b.p.name}'s turn. Current bet is ${game.table.pot.lastbet}", chan)
+            b.p.turn = True
+            if b.p.hasbet == False:
+              if game.table.pot.lastbet == 0:
+                b.p.minbet = 0
+              elif game.table.pot.lastbet >= b.p.purse:
+                b.p.minbet = b.p.purse
+              else:
+                b.p.minbet = game.table.pot.lastbet
+            elif b.p.lastbet < game.table.pot.lastbet:
+              b.p.minbet = game.table.pot.lastbet
+            else:
+              conn.say("Something wonky happened", chan)
+        else:
+          continue
+
+def TexasWinCalc(x, conn, chan):
+  winners, finalhandsdict = x.calculatewinners()
+  winmsg = "Winners:"
+  for d in winners:
+    winmsg += f" {d}"
+  conn.say(winmsg, chan)
+  conn.say("Final hands:", chan)
+  for k, v in finalhandsdict.items():
+    finmsg = f"{k}:"
+    for e in v:
+      finmsg += f" {e};"
+    conn.say(finmsg, chan)
+  if len(winners) == 1:
+    payout = x.table.pot.pot
+  else:
+    payout = int(x.table.pot.pot / len(winners))
+  for b in x.table.seats:
+    if b.isfilled():
+      if b.p.name in winners:
+        b.p.purse += payout
+  # Restart next hand somehow
+  x.table.deepclean()
+  x.dealer += 1
+  if x.dealer == x.table.seatstaken():
+    x.dealer = 0
+  x.playerturn = 3 + x.dealer
+  x.running = False
+  conn.say("'.texas start' to deal the next hand", chan)

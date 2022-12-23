@@ -262,19 +262,19 @@ def UnAddrFuncs(cmd, args, data, conn):
                   for a in range(2):
                     for b in x.table.seats:
                       if b.isfilled():
-                        if !b.justsat:
+                        if b.justsat == False:
                           x.d.deal(b.p)
                   a = x.dealer
                   for b in x.table.seats:
                     if b.isfilled():
-                      if !b.justsat and !b.p.folded:
+                      if b.justsat == False and b.p.folded == False:
                         a++
                         if a == x.table.seatstaken():
                           a = 0
                         if a == (x.dealer + x.playerturn) % x.table.inplay()
                           conn.say(f"Player {b.p.name}'s turn. Current bet is ${x.table.pot.lastbet}", chan)
                           b.p.turn = True
-                          if !b.p.hasbet:
+                          if b.p.hasbet == False:
                             if x.table.pot.lastbet == 0:
                               b.p.minbet = 0
                             elif x.table.pot.lastbet >= b.p.purse:
@@ -302,7 +302,7 @@ def UnAddrFuncs(cmd, args, data, conn):
         for x in texasgames:
           for y in x.table.seats:
             if y.isfilled():
-              if y.p.name == sendNick and !y.justsat and !y.p.folded:
+              if y.p.name == sendNick and y.justsat == False and y.p.folded == False:
                 try:
                   diff = int(args[1]) - y.p.lastbet
                   if int(args[1]) >= y.p.minbet:
@@ -314,7 +314,7 @@ def UnAddrFuncs(cmd, args, data, conn):
                         a = x.dealer
                         for b in x.table.seats:
                           if b.isfilled():
-                            if !b.justsat and !b.p.folded:
+                            if b.justsat == False and b.p.folded == False:
                               a++
                               if a == x.table.seatstaken():
                                 a = 0
@@ -344,7 +344,7 @@ def UnAddrFuncs(cmd, args, data, conn):
                                 else:
                                   conn.say(f"Player {b.p.name}'s turn. Current bet is ${x.table.pot.lastbet}", chan)
                                   b.p.turn = True
-                                  if !b.p.hasbet:
+                                  if b.p.hasbet == False:
                                     if x.table.pot.lastbet == 0:
                                       b.p.minbet = 0
                                     elif x.table.pot.lastbet >= b.p.purse:
@@ -367,7 +367,7 @@ def UnAddrFuncs(cmd, args, data, conn):
         for x in texasgames:
           for y in x.table.seats:
             if y.isfilled():
-              if y.p.name == sendNick and !y.justsat and !y.p.folded:
+              if y.p.name == sendNick and y.justsat == False and y.p.folded == False:
                 if y.p.check():
                   conn.say(sendNick + " has just checked", chan)
                 else:
@@ -376,7 +376,7 @@ def UnAddrFuncs(cmd, args, data, conn):
         for x in texasgames:
           for y in x.table.seats:
             if y.isfilled():
-              if y.p.name == sendNick and !y.justsat and !y.p.folded:
+              if y.p.name == sendNick and y.justsat == False and y.p.folded == False:
                 if y.p.fold():
                   conn.say(sendNick + " has just folded", chan)
                 else:
@@ -385,7 +385,7 @@ def UnAddrFuncs(cmd, args, data, conn):
         for x in texasgames:
           for y in x.table.seats:
             if y.isfilled():
-              if y.p.name == sendNick and !y.justsat and !y.p.folded:
+              if y.p.name == sendNick and y.justsat == False and y.p.folded == False:
                 conn.say(f"You have {y.p.hand} in your hand", sendNick)
                 conn.say(f"Check your DMs {sendNick}", chan)
       elif args[0].lower() == 'balance':

@@ -281,6 +281,22 @@ def UnAddrFuncs(cmd, args, data, conn):
               curplayers += f" {y.p.name}"
           conn.say(f"{x.name} <--> Current players:{curplayers}", chan)
     else:
+      if time.time() - x.lastturn > 900:
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick and y.p.turn != True:
+                for z in x.table.seats:
+                  if z.isfilled():
+                    if z.p.turn == True:
+                      x.playerleave(z.p)
+                      conn.say(f"{z.p.name} has been kicked from the {x.name} table for inactivity", chan)
+                      if x.table.inplay() == 1 and x.running == True:
+                        TexasWinCalc(x, conn, chan)
+                        return
+                      if x.table.seatstaken() == 0:
+                        texasgames.remove(x)
+                        del x
       if args[0].lower() == 'newgame' or args[0].lower() == 'join':
         conn.say(sendNick + ": Must leave your current game before creating or joining a new one", chan)
         conn.say("'.texas quit' to leave your current game", chan)
@@ -317,7 +333,7 @@ def UnAddrFuncs(cmd, args, data, conn):
                     if c.isfilled():
                       if c.justsat == False:
                         conn.say(f"Your hand: {c.p.hand}", c.p.name)
-                  TexasNextTurn(x, conn, chan)
+                  x.lastturn = TexasNextTurn(x, conn, chan)
                 else:
                   conn.say(f"Not enough players to start game \"{x.name}\"", chan)
       elif args[0].lower() == 'quit':
@@ -352,7 +368,7 @@ def UnAddrFuncs(cmd, args, data, conn):
                         if x.table.pot.lastbet == 0:
                           x.playerturn = 3
                           if x.running == True:
-                            TexasNextTurn(x, conn, chan)
+                            x.lastturn = TexasNextTurn(x, conn, chan)
                         break
                       else:
                         conn.say("Something went wrong in bet() (ノ°▽°)ノ︵┻━┻", chan)
@@ -379,7 +395,7 @@ def UnAddrFuncs(cmd, args, data, conn):
                         break
                   if cleaned:
                     x.playerturn = 3
-                    TexasNextTurn(x, conn, chan)
+                    x.lastturn = TexasNextTurn(x, conn, chan)
                   break
                 else:
                   conn.say(sendNick + f": you cannot check here, minimum bet is ${y.p.minbet}", chan)
@@ -403,7 +419,7 @@ def UnAddrFuncs(cmd, args, data, conn):
                         break
                   if cleaned:
                     x.playerturn = 3
-                    TexasNextTurn(x, conn, chan)
+                    x.lastturn = TexasNextTurn(x, conn, chan)
                   break
                 else:
                   conn.say("Something went wrong in fold() (ノ°▽°)ノ︵┻━┻", chan)
@@ -456,6 +472,7 @@ def TexasNextTurn(game, conn, chan):
         if c == curturn:
           conn.say(f"Player {b.p.name}'s turn. Current bet is ${game.table.pot.lastbet}", chan)
           b.p.turn = True
+          turntime = time.time()
           if b.p.hasbet == False:
             if game.table.pot.lastbet == 0:
               b.p.minbet = 0
@@ -469,6 +486,7 @@ def TexasNextTurn(game, conn, chan):
             conn.say("Something wonky happened", chan)
         else:
           continue
+  return turntime
 
 def TexasBettingRound(game, conn, chan):
   curturn = game.playerturn % game.table.inplay()

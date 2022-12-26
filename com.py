@@ -302,6 +302,9 @@ def UnAddrFuncs(cmd, args, data, conn):
                   conn.say(sendNick + f": Your game \"{x.name}\" is in the middle of a hand", chan)
                 elif x.table.isready():
                   x.running = True
+                  cardsneeded = (x.table.inplay() * 2) + 8
+                  if len(x.d.deck) < cardsneeded:
+                    x.d = texas.Deck()
                   x.d.shuffle()
                   msg = x.blinds()
                   conn.say(msg, chan)

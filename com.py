@@ -344,6 +344,7 @@ def UnAddrFuncs(cmd, args, data, conn):
             if y.isfilled():
               if y.p.name == sendNick:
                 if y.p.turn == True:
+                  x.playerturn += 1
                   x.lastturn = TexasNextTurn(x, conn, chan)
                 x.playerleave(y.p)
                 if x.table.inplay() == 1 and x.running == True:

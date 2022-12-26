@@ -226,7 +226,7 @@ def UnAddrFuncs(cmd, args, data, conn):
       conn.say(sendNick + ': Your api key is an empty string. Try to register again', chan)
   elif cmd.lower() == '.texas' or cmd.lower() == '!texas':
     if len(args) == 0:
-      conn.say(".texas commands: newgame, list, join, start, bet, check, fold, hand, balance", chan)
+      conn.say(".texas commands: newgame, list, join, start, bet, check, fold, hand, table, status, balance", chan)
       return
     texasplayers = []
     for z in texasgames:
@@ -410,6 +410,12 @@ def UnAddrFuncs(cmd, args, data, conn):
               if y.p.name == sendNick and y.justsat == False and y.p.folded == False:
                 conn.say(f"You have {y.p.hand} in your hand", sendNick)
                 conn.say(f"Check your DMs {sendNick}", chan)
+      elif args[0].lower() == 'table' or args[0].lower() == 'status':
+        for x in texasgames:
+          for y in x.table.seats:
+            if y.isfilled():
+              if y.p.name == sendNick:
+                conn.say(x.table.comm.cards(), chan)
       elif args[0].lower() == 'balance':
         for x in texasgames:
           for y in x.table.seats:

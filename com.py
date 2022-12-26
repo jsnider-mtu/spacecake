@@ -289,7 +289,7 @@ def UnAddrFuncs(cmd, args, data, conn):
                 for z in x.table.seats:
                   if z.isfilled():
                     if z.p.turn == True:
-                      conn.say(f"{z.p.name} has been kicked from the {x.name} table for inactivity", chan)
+                      conn.say(f"{z.p.name} has been kicked from the \"{x.name}\" table for inactivity", chan)
                       x.playerleave(z.p)
                       if x.table.inplay() == 1 and x.running == True:
                         TexasWinCalc(x, conn, chan)

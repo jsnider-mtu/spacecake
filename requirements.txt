@@ -1,2 +1,2 @@
--e git+https://github.com/jsnider-mtu/texas.git#egg=texas
+-e git+https://github.com/jsnider-mtu/poker.git#egg=poker
 openai

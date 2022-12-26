@@ -15,7 +15,7 @@ import os
 import random
 import re
 import time
-import texas
+import poker
 
 texasgames = []
 
@@ -251,10 +251,10 @@ def UnAddrFuncs(cmd, args, data, conn):
             if args[1] == z.name:
               conn.say(sendNick + f": The name {args[1]} is already taken", chan)
               return
-          texasgames.append(texas.Game(args[1]))
+          texasgames.append(poker.Game(args[1]))
           for z in texasgames:
             if z.name == args[1]:
-              if z.playerjoin(texas.Player(sendNick)):
+              if z.playerjoin(poker.Player(sendNick)):
                 conn.say(f"Texas Hold 'Em game \"{z.name}\" has been created by {sendNick}. Use '.texas join {z.name}' to join", chan)
               else:
                 conn.say("Something went wrong starting a game (ノ°▽°)ノ︵┻━┻", chan)
@@ -264,7 +264,7 @@ def UnAddrFuncs(cmd, args, data, conn):
         else:
           for z in texasgames:
             if args[1] == z.name:
-              if z.playerjoin(texas.Player(sendNick)):
+              if z.playerjoin(poker.Player(sendNick)):
                 conn.say(f"{sendNick} has joined the \"{z.name}\" Texas Hold 'Em game", chan)
                 return
               else:

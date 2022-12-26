@@ -480,7 +480,7 @@ def TexasBettingRound(game, conn, chan):
           if b.p.hasbet and b.p.lastbet == game.table.pot.lastbet:
             conn.say(f"Betting round over, current pot is ${game.table.pot.pot}", chan)
             game.table.clean()
-            if game.table.comm.flopcards == None:
+            if len(game.table.comm.flopcards) == 0:
               flopcardsmsg = "The Flop:"
               game.table.comm.flop(game.d)
               for c in game.table.comm.flopcards:

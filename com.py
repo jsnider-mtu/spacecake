@@ -281,11 +281,11 @@ def UnAddrFuncs(cmd, args, data, conn):
               curplayers += f" {y.p.name}"
           conn.say(f"{x.name} <--> Current players:{curplayers}", chan)
     else:
-      if time.time() - x.lastturn > 900:
-        for x in texasgames:
-          for y in x.table.seats:
-            if y.isfilled():
-              if y.p.name == sendNick and y.p.turn != True:
+      for x in texasgames:
+        for y in x.table.seats:
+          if y.isfilled():
+            if y.p.name == sendNick and y.p.turn != True:
+              if time.time() - x.lastturn > 900:
                 for z in x.table.seats:
                   if z.isfilled():
                     if z.p.turn == True:

@@ -297,6 +297,8 @@ def UnAddrFuncs(cmd, args, data, conn):
                       if x.table.seatstaken() == 0:
                         texasgames.remove(x)
                         del x
+                        return
+                      x.lastturn = TexasNextTurn(x, conn, chan)
       if args[0].lower() == 'newgame' or args[0].lower() == 'join':
         conn.say(sendNick + ": Must leave your current game before creating or joining a new one", chan)
         conn.say("'.texas quit' to leave your current game", chan)
@@ -341,6 +343,8 @@ def UnAddrFuncs(cmd, args, data, conn):
           for y in x.table.seats:
             if y.isfilled():
               if y.p.name == sendNick:
+                if y.p.turn == True:
+                  x.lastturn = TexasNextTurn(x, conn, chan)
                 x.playerleave(y.p)
                 if x.table.inplay() == 1 and x.running == True:
                   TexasWinCalc(x, conn, chan)
@@ -348,6 +352,7 @@ def UnAddrFuncs(cmd, args, data, conn):
                 if x.table.seatstaken() == 0:
                   texasgames.remove(x)
                   del x
+                  return
       elif args[0].lower() == 'bet':
         if len(args) != 2:
           conn.say(sendNick + ": Usage: '.texas bet <integer>' (floating point numbers will be truncated)", chan)

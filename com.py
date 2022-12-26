@@ -499,7 +499,7 @@ def TexasBettingRound(game, conn, chan):
               conn.say(game.table.comm.cards(), chan)
               break
             else:
-              TexasWinCalc(x, conn, chan)
+              TexasWinCalc(game, conn, chan)
               return
           else:
             conn.say(f"Player {b.p.name}'s turn. Current bet is ${game.table.pot.lastbet}", chan)

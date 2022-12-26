@@ -351,7 +351,8 @@ def UnAddrFuncs(cmd, args, data, conn):
                         TexasBettingRound(x, conn, chan)
                         if x.table.pot.lastbet == 0:
                           x.playerturn = 3
-                          TexasNextTurn(x, conn, chan)
+                          if x.running == True:
+                            TexasNextTurn(x, conn, chan)
                         break
                       else:
                         conn.say("Something went wrong in bet() (ノ°▽°)ノ︵┻━┻", chan)

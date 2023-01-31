@@ -360,7 +360,10 @@ class Bot(object):
   def __init__(self, ident):
     self.ident = ident
     self.conn = IRCConn(self)
-    self.conn.connect()
+    try:
+      self.conn.connect()
+    except:
+      self.conn.connect()
 
   def handle_privmsg(self, tokens, sender):
     chan = tokens.pop(0)

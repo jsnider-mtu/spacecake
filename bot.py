@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 # coding=utf-8
 import json
-import com
-import socket
+import logging
 import os
+import socket
 import sys
 import threading
 import time
-import logging
-from logging.handlers import RotatingFileHandler
 from importlib import reload
+from logging.handlers import RotatingFileHandler
+
+import com
 from ident import danknode
 
 if os.getenv("GRP_PASS") == "":
